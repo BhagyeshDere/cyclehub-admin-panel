@@ -78,6 +78,14 @@ const filtered = requests.filter(r =>
 r.name.toLowerCase().includes(search.toLowerCase())
 );
 
+/* NEW ANALYTICS */
+
+const registeredWholesalers = requests.filter(r=>r.status==="Approved").length;
+
+/* Example total customers (can connect with real DB later) */
+
+const totalCustomers = 1240;
+
 
 return(
 
@@ -108,7 +116,7 @@ Review and approve wholesaler registration requests
 
 {/* STATS */}
 
-<div className="grid grid-cols-4 gap-6">
+<div className="grid grid-cols-6 gap-6">
 
 <Stat title="Total Requests" value={requests.length}/>
 
@@ -125,6 +133,20 @@ value={requests.filter(r=>r.status==="Approved").length}
 <Stat
 title="Rejected"
 value={requests.filter(r=>r.status==="Rejected").length}
+/>
+
+{/* NEW CARD */}
+
+<Stat
+title="Registered Wholesalers"
+value={registeredWholesalers}
+/>
+
+{/* NEW CARD */}
+
+<Stat
+title="Total Customers"
+value={totalCustomers}
 />
 
 </div>

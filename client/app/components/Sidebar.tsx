@@ -30,7 +30,7 @@ ${pathname === href
 
 return(
 
-<aside className="w-64 bg-gradient-to-b from-white via-yellow-50 to-yellow-100 border-r border-yellow-200 flex flex-col shadow-md">
+<aside className="w-64 min-h-screen bg-gradient-to-b from-white via-yellow-50 to-yellow-100 border-r border-yellow-200 flex flex-col shadow-md">
 
 <div className="p-6 flex items-center gap-3 border-b border-yellow-200">
 

@@ -1,9 +1,39 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import SalesChart from "../components/SalesChart";
 import Sidebar from "../components/Sidebar";
 
 export default function Dashboard() {
+
+const [notifications,setNotifications] = useState([
+"New order placed by Rahul Sharma",
+"Wholesaler request approved",
+"Inventory low for Mountain X Pro"
+]);
+
+useEffect(()=>{
+
+const interval=setInterval(()=>{
+
+const msgs=[
+"New customer registered",
+"New order placed",
+"Payment received",
+"Wholesaler request submitted"
+];
+
+setNotifications(prev=>[
+msgs[Math.floor(Math.random()*msgs.length)],
+...prev
+]);
+
+},7000);
+
+return()=>clearInterval(interval)
+
+},[])
+
 
   return (
     <div className="flex h-screen bg-[#f6f8fb] text-slate-800">
@@ -87,35 +117,14 @@ export default function Dashboard() {
 
           {/* STATS */}
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-6">
 
-            <StatCard
-              title="Total Products"
-              value="1,240"
-              icon="pedal_bike"
-              growth="+12%"
-            />
-
-            <StatCard
-              title="Total Users"
-              value="8,432"
-              icon="group"
-              growth="+5%"
-            />
-
-            <StatCard
-              title="Total Orders"
-              value="456"
-              icon="shopping_bag"
-              growth="+18%"
-            />
-
-            <StatCard
-              title="Revenue"
-              value="$128,400"
-              icon="payments"
-              growth="+24%"
-            />
+            <StatCard title="Total Products" value="1,240" icon="pedal_bike" growth="+12%"/>
+            <StatCard title="Total Users" value="8,432" icon="group" growth="+5%"/>
+            <StatCard title="Total Customers" value="6,210" icon="person" growth="+7%"/>
+            <StatCard title="Total Wholesalers" value="340" icon="store" growth="+4%"/>
+            <StatCard title="Total Orders" value="456" icon="shopping_bag" growth="+18%"/>
+            <StatCard title="Revenue" value="$128,400" icon="payments" growth="+24%"/>
 
           </div>
 
@@ -124,8 +133,6 @@ export default function Dashboard() {
           {/* CHART + TOP SELLING */}
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-            {/* SALES OVERVIEW */}
 
             <div className="lg:col-span-2 bg-white rounded-xl border p-6 shadow-sm">
 
@@ -145,27 +152,19 @@ export default function Dashboard() {
 
                 <div className="flex gap-2">
 
-                  <button className="px-3 py-1 text-xs bg-gray-100 rounded">
-                    Weekly
-                  </button>
-
-                  <button className="px-3 py-1 text-xs bg-yellow-400 text-black rounded font-medium">
-                    Monthly
-                  </button>
+                  
 
                 </div>
 
               </div>
 
               <div className="h-64">
-  <SalesChart />
-</div>
+                <SalesChart />
+              </div>
 
             </div>
 
 
-
-            {/* TOP SELLING */}
 
             <div className="bg-white border rounded-xl p-6 shadow-sm">
 
@@ -182,6 +181,130 @@ export default function Dashboard() {
             </div>
 
           </div>
+
+
+
+{/* NEW ADVANCED ANALYTICS SECTION */}
+
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+{/* LIVE REVENUE */}
+
+<div className="bg-white border rounded-xl p-6">
+
+<h3 className="font-semibold mb-4">
+Live Revenue Chart
+</h3>
+
+<div className="flex items-end gap-3 h-40">
+
+{[40,60,80,30,70,50].map((v,i)=>(
+<div key={i} className="w-8 bg-green-500 rounded" style={{height:v+"%"}}></div>
+))}
+
+</div>
+
+</div>
+
+
+{/* ORDERS GROWTH */}
+
+<div className="bg-white border rounded-xl p-6">
+
+<h3 className="font-semibold mb-4">
+Orders Growth
+</h3>
+
+<div className="flex items-end gap-3 h-40">
+
+{[20,30,50,80,60,90].map((v,i)=>(
+<div key={i} className="w-8 bg-blue-500 rounded" style={{height:v+"%"}}></div>
+))}
+
+</div>
+
+</div>
+
+
+{/* CUSTOMER ACTIVITY */}
+
+<div className="bg-white border rounded-xl p-6">
+
+<h3 className="font-semibold mb-4">
+Customer Activity
+</h3>
+
+<div className="flex items-end gap-3 h-40">
+
+{[30,45,70,60,80,50].map((v,i)=>(
+<div key={i} className="w-8 bg-purple-500 rounded" style={{height:v+"%"}}></div>
+))}
+
+</div>
+
+</div>
+
+</div>
+
+
+
+{/* WHOLESALER LEADERBOARD */}
+
+<div className="bg-white border rounded-xl p-6">
+
+<h3 className="font-semibold text-lg mb-4">
+Top Wholesalers Leaderboard
+</h3>
+
+<Leaderboard name="Metro Cycles Ltd." value="$52,000"/>
+<Leaderboard name="Velocity Distributors" value="$41,200"/>
+<Leaderboard name="BikeWorld Wholesale" value="$38,900"/>
+<Leaderboard name="UrbanRide Suppliers" value="$31,500"/>
+
+</div>
+
+
+
+{/* REAL TIME NOTIFICATIONS */}
+
+<div className="bg-white border rounded-xl p-6">
+
+<h3 className="font-semibold text-lg mb-4">
+Real Time Notifications
+</h3>
+
+<div className="space-y-3">
+
+{notifications.map((n,i)=>(
+<div key={i} className="text-sm border-b pb-2">
+🔔 {n}
+</div>
+))}
+
+</div>
+
+</div>
+
+
+
+{/* AI ANALYTICS PANEL */}
+
+<div className="bg-white border rounded-xl p-6">
+
+<h3 className="font-semibold text-lg mb-4">
+Admin AI Analytics
+</h3>
+
+<ul className="text-sm space-y-2 text-gray-600">
+
+<li>📈 Sales expected to increase 18% next week</li>
+<li>⚠ Mountain Pro X1 stock may run out in 5 days</li>
+<li>👥 Customer growth trending upward</li>
+<li>🏬 12 new wholesaler applications predicted</li>
+
+</ul>
+
+</div>
 
 
 
@@ -233,30 +356,8 @@ export default function Dashboard() {
 }
 
 
+
 /* COMPONENTS */
-
-
-function SidebarItem({label,icon,active}:any){
-
-  return(
-
-    <div
-      className={`flex items-center gap-3 px-3 py-2 rounded-lg cursor-pointer transition
-      ${active ? "bg-yellow-100 text-yellow-700" : "text-gray-600 hover:bg-gray-100"}`}
-    >
-
-      <span className="material-symbols-outlined text-[18px]">
-        {icon}
-      </span>
-
-      {label}
-
-    </div>
-
-  )
-
-}
-
 
 function StatCard({title,value,icon,growth}:any){
 
@@ -327,6 +428,20 @@ function TopItem({name,percent}:any){
 
 }
 
+function Leaderboard({name,value}:any){
+
+return(
+
+<div className="flex justify-between border-b py-2">
+
+<span>{name}</span>
+<span className="font-medium">{value}</span>
+
+</div>
+
+)
+
+}
 
 function TableRow({order,user,price,status}:any){
 

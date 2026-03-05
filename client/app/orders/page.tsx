@@ -14,12 +14,14 @@ date:string
 status:string
 payment:string
 avatar:string
+role:"Customer" | "Wholesaler"
 }
 
 export default function Orders(){
 
 const [search,setSearch] = useState("");
 const [statusFilter,setStatusFilter] = useState("All");
+const [roleFilter,setRoleFilter] = useState("All");
 const [selected,setSelected] = useState<Order | null>(null);
 
 const orders:Order[] = [
@@ -33,7 +35,8 @@ amount:25000,
 date:"12 Mar 2026",
 status:"Delivered",
 payment:"Paid",
-avatar:"https://i.pravatar.cc/40?img=1"
+avatar:"https://i.pravatar.cc/40?img=1",
+role:"Customer"
 },
 
 {
@@ -45,7 +48,8 @@ amount:18500,
 date:"10 Mar 2026",
 status:"Processing",
 payment:"Pending",
-avatar:"https://i.pravatar.cc/40?img=2"
+avatar:"https://i.pravatar.cc/40?img=2",
+role:"Customer"
 },
 
 {
@@ -57,7 +61,8 @@ amount:42000,
 date:"8 Mar 2026",
 status:"Shipped",
 payment:"Paid",
-avatar:"https://i.pravatar.cc/40?img=3"
+avatar:"https://i.pravatar.cc/40?img=3",
+role:"Wholesaler"
 },
 
 {
@@ -69,14 +74,16 @@ amount:21000,
 date:"7 Mar 2026",
 status:"Delivered",
 payment:"Paid",
-avatar:"https://i.pravatar.cc/40?img=4"
+avatar:"https://i.pravatar.cc/40?img=4",
+role:"Wholesaler"
 }
 
 ];
 
 const filtered = orders
 .filter(o=>o.customer.toLowerCase().includes(search.toLowerCase()))
-.filter(o=>statusFilter==="All" ? true : o.status===statusFilter);
+.filter(o=>statusFilter==="All" ? true : o.status===statusFilter)
+.filter(o=>roleFilter==="All" ? true : o.role===roleFilter);
 
 const totalRevenue = orders.reduce((acc,o)=>acc+o.amount,0);
 
@@ -183,6 +190,20 @@ className="border border-black px-4 py-2 rounded-lg text-black"
 
 </select>
 
+{/* NEW ROLE FILTER */}
+
+<select
+value={roleFilter}
+onChange={(e)=>setRoleFilter(e.target.value)}
+className="border border-black px-4 py-2 rounded-lg text-black"
+>
+
+<option>All</option>
+<option>Customer</option>
+<option>Wholesaler</option>
+
+</select>
+
 </div>
 
 
@@ -197,6 +218,7 @@ className="border border-black px-4 py-2 rounded-lg text-black"
 <tr>
 
 <th className="p-4 text-left">Customer</th>
+<th className="text-left">Type</th>
 <th className="text-left">Cycle</th>
 <th className="text-left">Amount</th>
 <th className="text-left">Date</th>
@@ -233,6 +255,10 @@ className="w-10 h-10 rounded-full"
 
 </div>
 
+</td>
+
+<td className="text-black font-semibold">
+{order.role}
 </td>
 
 <td className="text-black">{order.cycle}</td>
@@ -322,15 +348,13 @@ Order Details
 </h3>
 
 <Detail label="Customer" value={selected.customer}/>
+<Detail label="Type" value={selected.role}/>
 <Detail label="Email" value={selected.email}/>
 <Detail label="Cycle" value={selected.cycle}/>
 <Detail label="Amount" value={`₹${selected.amount}`}/>
 <Detail label="Status" value={selected.status}/>
 <Detail label="Payment" value={selected.payment}/>
 <Detail label="Date" value={selected.date}/>
-
-
-{/* TIMELINE */}
 
 <div>
 

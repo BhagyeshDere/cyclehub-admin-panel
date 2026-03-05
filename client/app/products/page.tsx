@@ -40,14 +40,17 @@ alert("Please fill all fields");
 return;
 }
 
+const price = Number(form.price) || 0;
+const stock = Number(form.stock) || 0;
+
 const newProduct={
 id:`PRD-${Math.floor(Math.random()*9999)}`,
 name:form.name,
 category:form.category,
-price:Number(form.price),
-stock:Number(form.stock),
+price:price,
+stock:stock,
 image:preview,
-status:Number(form.stock) > 10 ? "In Stock" : Number(form.stock) > 0 ? "Low Stock" : "Out of Stock"
+status:stock > 10 ? "In Stock" : stock > 0 ? "Low Stock" : "Out of Stock"
 };
 
 setProducts([...products,newProduct]);
@@ -81,39 +84,67 @@ setPreview(URL.createObjectURL(file));
 }
 }
 
+function safeNumber(value:any){
+const num = Number(value);
+return isNaN(num) ? 0 : num;
+}
+
 function handleCSV(e:any){
+
 const file=e.target.files[0];
+if(!file) return;
+
 const reader=new FileReader();
 
 reader.onload=(event:any)=>{
-const rows=event.target.result.split("\n");
 
-const imported=rows.slice(1).map((row:any)=>{
-const [name,category,price,stock]=row.split(",");
-return{
+const text = event.target.result;
+const rows = text.split("\n");
+
+const imported:any[] = [];
+
+rows.slice(1).forEach((row:any)=>{
+
+if(!row.trim()) return;
+
+const cols = row.split(",");
+
+const name = cols[0]?.trim();
+const category = cols[1]?.trim() || "Mountain";
+const price = safeNumber(cols[2]);
+const stock = safeNumber(cols[3]);
+
+if(!name) return;
+
+imported.push({
 id:`PRD-${Math.floor(Math.random()*10000)}`,
-name,
-category,
-price:Number(price),
-stock:Number(stock),
-status:Number(stock) > 10 ? "In Stock" : Number(stock) > 0 ? "Low Stock" : "Out of Stock",
+name:name,
+category:category,
+price:price,
+stock:stock,
+status:stock > 10 ? "In Stock" : stock > 0 ? "Low Stock" : "Out of Stock",
 image:null
-};
 });
 
-setProducts([...products,...imported]);
+});
+
+setProducts(prev => [...prev,...imported]);
+
 };
 
 reader.readAsText(file);
+
 }
 
 function exportCSV(){
+
+const header = "name,category,price,stock\n";
 
 const rows = products.map(p =>
 `${p.name},${p.category},${p.price},${p.stock}`
 ).join("\n");
 
-const blob = new Blob([rows]);
+const blob = new Blob([header + rows]);
 const url = URL.createObjectURL(blob);
 
 const a = document.createElement("a");
@@ -148,17 +179,15 @@ filtered = [...filtered].sort((a,b)=>a.stock-b.stock);
 
 return(
 
-<div className="flex h-screen bg-[#f6f8fb] text-black">
+<div className="flex min-h-screen bg-[#f6f8fb] text-black">
 
 <Sidebar/>
 
-<main className="flex-1 flex flex-col">
+<main className="flex-1 flex flex-col overflow-y-auto">
 
 <Header/>
 
 <div className="p-8 space-y-6">
-
-{/* HEADER */}
 
 <div className="flex items-center justify-between">
 
@@ -188,8 +217,6 @@ className="bg-yellow-400 hover:bg-yellow-500 text-black px-5 py-2 rounded-lg fon
 
 </div>
 
-{/* ANALYTICS */}
-
 <div className="grid grid-cols-3 gap-6">
 
 <Card title="Total Products" value={products.length}/>
@@ -198,16 +225,12 @@ className="bg-yellow-400 hover:bg-yellow-500 text-black px-5 py-2 rounded-lg fon
 
 </div>
 
-{/* SEARCH */}
-
 <input
 placeholder="Search products..."
 value={search}
 onChange={(e)=>setSearch(e.target.value)}
 className="border border-black bg-white px-4 py-2 rounded-lg w-72"
 />
-
-{/* TABLE */}
 
 <div className="bg-white rounded-xl shadow overflow-x-auto">
 
@@ -330,13 +353,13 @@ Delete
 
 </main>
 
-{/* ADD PRODUCT MODAL */}
+{/* ADD PRODUCT MODAL HERE */}
 
 {showModal && (
 
-<div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+<div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
 
-<div className="bg-white w-[420px] rounded-xl p-6 space-y-4">
+<div className="bg-white w-[420px] rounded-xl p-6 space-y-4 shadow-xl">
 
 <h3 className="text-lg font-semibold">Add Product</h3>
 
@@ -352,7 +375,9 @@ value={form.category}
 onChange={(e)=>setForm({...form,category:e.target.value})}
 className="w-full border p-2 rounded"
 >
-{categories.map(c=>(<option key={c}>{c}</option>))}
+{categories.map(c=>(
+<option key={c}>{c}</option>
+))}
 </select>
 
 <input
@@ -400,7 +425,7 @@ Cancel
 onClick={handleAdd}
 className="px-4 py-2 bg-yellow-400 rounded"
 >
-Add
+Add Product
 </button>
 
 </div>
@@ -411,41 +436,6 @@ Add
 
 )}
 
-{/* DELETE MODAL */}
-
-{deleteProduct && (
-
-<div className="fixed inset-0 bg-black/40 flex items-center justify-center">
-
-<div className="bg-white rounded-xl p-6 w-[360px] space-y-4">
-
-<h3 className="font-semibold text-lg">Delete Product</h3>
-
-<p>Delete {deleteProduct.name} ?</p>
-
-<div className="flex justify-end gap-3">
-
-<button
-onClick={()=>setDeleteProduct(null)}
-className="px-4 py-2 border rounded"
->
-Cancel
-</button>
-
-<button
-onClick={handleDelete}
-className="px-4 py-2 bg-red-500 text-white rounded"
->
-Delete
-</button>
-
-</div>
-
-</div>
-
-</div>
-
-)}
 
 </div>
 
@@ -466,6 +456,8 @@ return(
 <p className="text-2xl font-semibold mt-1">
 {value}
 </p>
+
+
 
 </div>
 

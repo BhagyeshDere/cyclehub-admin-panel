@@ -1,8 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
+
+import {
+LineChart,
+Line,
+XAxis,
+YAxis,
+Tooltip,
+ResponsiveContainer,
+BarChart,
+Bar
+} from "recharts";
 
 type Order = {
 id:number
@@ -14,12 +25,16 @@ date:string
 status:string
 payment:string
 avatar:string
+type:"Customer" | "Wholesaler"
 }
 
 export default function Users(){
 
 const [search,setSearch] = useState("");
 const [selectedOrder,setSelectedOrder] = useState<Order | null>(null);
+const [sort,setSort] = useState("none");
+const [orderType,setOrderType] = useState("All");
+const [notifications,setNotifications] = useState<string[]>([]);
 
 const orders:Order[] = [
 {
@@ -31,7 +46,8 @@ amount:25000,
 date:"12 Mar 2026",
 status:"Delivered",
 payment:"Paid",
-avatar:"https://i.pravatar.cc/40?img=1"
+avatar:"https://i.pravatar.cc/40?img=1",
+type:"Customer"
 },
 {
 id:2,
@@ -42,7 +58,8 @@ amount:18500,
 date:"10 Mar 2026",
 status:"Processing",
 payment:"Pending",
-avatar:"https://i.pravatar.cc/40?img=2"
+avatar:"https://i.pravatar.cc/40?img=2",
+type:"Customer"
 },
 {
 id:3,
@@ -53,15 +70,108 @@ amount:42000,
 date:"8 Mar 2026",
 status:"Shipped",
 payment:"Paid",
-avatar:"https://i.pravatar.cc/40?img=3"
+avatar:"https://i.pravatar.cc/40?img=3",
+type:"Wholesaler"
+},
+{
+id:4,
+customer:"Rohit Traders",
+email:"rohit@cyclemart.com",
+cycle:"Urban Rider",
+amount:60000,
+date:"7 Mar 2026",
+status:"Processing",
+payment:"Paid",
+avatar:"https://i.pravatar.cc/40?img=4",
+type:"Wholesaler"
 }
 ];
 
-const filteredOrders = orders.filter(order =>
+let filteredOrders = orders
+.filter(order =>
 order.customer.toLowerCase().includes(search.toLowerCase())
+)
+.filter(order =>
+orderType==="All" ? true : order.type===orderType
 );
 
+if(sort==="amount"){
+filteredOrders=[...filteredOrders].sort((a,b)=>b.amount-a.amount);
+}
+
+if(sort==="status"){
+filteredOrders=[...filteredOrders].sort((a,b)=>a.status.localeCompare(b.status));
+}
+
 const totalRevenue = orders.reduce((acc,o)=>acc+o.amount,0);
+
+/* CUSTOMER ANALYTICS */
+
+const customersDay = 12;
+const customersMonth = 320;
+const customersYear = 4200;
+
+/* WHOLESALER ANALYTICS */
+
+const wholesalersDay = 2;
+const wholesalersMonth = 35;
+const wholesalersYear = 400;
+
+/* CHART DATA */
+
+const customerGrowth=[
+{name:"Jan",customers:200},
+{name:"Feb",customers:400},
+{name:"Mar",customers:650},
+{name:"Apr",customers:900},
+{name:"May",customers:1200},
+{name:"Jun",customers:1500}
+];
+
+const wholesalerGrowth=[
+{name:"Jan",wholesalers:20},
+{name:"Feb",wholesalers:35},
+{name:"Mar",wholesalers:50},
+{name:"Apr",wholesalers:70},
+{name:"May",wholesalers:95},
+{name:"Jun",wholesalers:120}
+];
+
+const revenueForecast=[
+{name:"Jul",revenue:38000},
+{name:"Aug",revenue:42000},
+{name:"Sep",revenue:46000},
+{name:"Oct",revenue:51000},
+{name:"Nov",revenue:58000}
+];
+
+const heatmapData=[
+{name:"Mon",orders:10},
+{name:"Tue",orders:25},
+{name:"Wed",orders:18},
+{name:"Thu",orders:30},
+{name:"Fri",orders:22},
+{name:"Sat",orders:40},
+{name:"Sun",orders:35}
+];
+
+/* REAL TIME NOTIFICATIONS */
+
+useEffect(()=>{
+
+const interval=setInterval(()=>{
+
+const randomCustomer=["Rohit","Karan","Vikram","Neha","Pooja"];
+
+const newOrder=`${randomCustomer[Math.floor(Math.random()*5)]} placed a new order`;
+
+setNotifications(prev=>[newOrder,...prev.slice(0,4)])
+
+},5000)
+
+return ()=>clearInterval(interval)
+
+},[])
 
 return(
 
@@ -118,37 +228,9 @@ Customers who purchased cycles
 </div>
 
 
-{/* REVENUE CHART */}
+{/* SEARCH + SORT + TYPE FILTER */}
 
-<div className="border border-black p-6 rounded-xl">
-
-<h3 className="text-xl font-bold text-black mb-4">
-Revenue Analytics
-</h3>
-
-<div className="flex gap-4 items-end h-40">
-
-{orders.map((o,i)=>(
-<div key={i} className="flex flex-col items-center">
-
-<div
-className="bg-black w-10"
-style={{height:o.amount/300}}
-></div>
-
-<p className="text-sm text-black mt-2">
-{o.customer.split(" ")[0]}
-</p>
-
-</div>
-))}
-
-</div>
-
-</div>
-
-
-{/* SEARCH */}
+<div className="flex gap-4">
 
 <input
 type="text"
@@ -157,6 +239,30 @@ className="border border-black text-black placeholder-black px-4 py-2 rounded-lg
 value={search}
 onChange={(e)=>setSearch(e.target.value)}
 />
+
+<select
+className="border border-black px-3 py-2 rounded"
+onChange={(e)=>setSort(e.target.value)}
+>
+
+<option value="none">Sort</option>
+<option value="amount">Amount</option>
+<option value="status">Status</option>
+
+</select>
+
+<select
+className="border border-black px-3 py-2 rounded"
+onChange={(e)=>setOrderType(e.target.value)}
+>
+
+<option value="All">All Orders</option>
+<option value="Customer">Customer Orders</option>
+<option value="Wholesaler">Wholesaler Orders</option>
+
+</select>
+
+</div>
 
 
 {/* ORDERS TABLE */}
@@ -169,6 +275,7 @@ onChange={(e)=>setSearch(e.target.value)}
 
 <tr>
 <th className="p-4 text-left">Customer</th>
+<th className="text-left">Type</th>
 <th className="text-left">Cycle</th>
 <th className="text-left">Amount</th>
 <th className="text-left">Status</th>
@@ -203,6 +310,10 @@ className="w-10 h-10 rounded-full"
 
 </div>
 
+</td>
+
+<td className="text-black font-semibold">
+{order.type}
 </td>
 
 <td className="text-black">{order.cycle}</td>
@@ -255,99 +366,6 @@ View
 </table>
 
 </div>
-
-
-{/* RECENT ORDERS */}
-
-<div className="border border-black p-6 rounded-xl">
-
-<h3 className="text-xl font-bold text-black mb-4">
-Recent Orders
-</h3>
-
-{orders.map(o=>(
-<div key={o.id} className="flex justify-between border-b border-black py-2">
-
-<span className="text-black">{o.customer}</span>
-
-<span className="text-black">₹{o.amount}</span>
-
-</div>
-))}
-
-</div>
-
-
-{/* TOP SELLING CYCLES */}
-
-<div className="border border-black p-6 rounded-xl">
-
-<h3 className="text-xl font-bold text-black mb-4">
-Top Selling Cycles
-</h3>
-
-<ul className="space-y-2 text-black">
-
-<li>🚴 Mountain X Pro</li>
-<li>🚴 Roadster 500</li>
-<li>🚴 SpeedX Carbon</li>
-<li>🚴 Urban Rider</li>
-
-</ul>
-
-</div>
-
-
-{/* ORDER DETAILS DRAWER */}
-
-{selectedOrder && (
-
-<div className="fixed inset-0 bg-black/40 flex justify-end">
-
-<div className="bg-white w-96 h-full p-6 space-y-6">
-
-<h3 className="text-xl font-bold text-black">
-Order Details
-</h3>
-
-<p className="text-black"><b>Customer:</b> {selectedOrder.customer}</p>
-<p className="text-black"><b>Email:</b> {selectedOrder.email}</p>
-<p className="text-black"><b>Cycle:</b> {selectedOrder.cycle}</p>
-<p className="text-black"><b>Amount:</b> ₹{selectedOrder.amount}</p>
-<p className="text-black"><b>Status:</b> {selectedOrder.status}</p>
-<p className="text-black"><b>Payment:</b> {selectedOrder.payment}</p>
-
-
-{/* ORDER TRACKING TIMELINE */}
-
-<div>
-
-<h4 className="font-bold text-black mb-2">
-Order Timeline
-</h4>
-
-<ul className="space-y-2 text-sm text-black">
-
-<li>📦 Order Placed</li>
-<li>🚚 Shipped</li>
-<li>🏠 Delivered</li>
-
-</ul>
-
-</div>
-
-<button
-onClick={()=>setSelectedOrder(null)}
-className="bg-black text-white px-4 py-2 rounded"
->
-Close
-</button>
-
-</div>
-
-</div>
-
-)}
 
 </div>
 
