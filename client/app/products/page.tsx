@@ -13,21 +13,26 @@ const [preview,setPreview] = useState<any>(null);
 const [filter,setFilter] = useState("All");
 const [sort,setSort] = useState("None");
 
+/* NEW FILTER FOR PRICE TYPE */
+
+const [priceType,setPriceType] = useState("Customer");
+
 const [categories,setCategories] = useState([
 "Mountain","Road","BMX","Electric"
 ]);
 
 const [products,setProducts] = useState([
-{ id:"PRD-1021", name:"Mountain Pro X1", category:"Mountain", price:1200, stock:45, status:"In Stock", image:null },
-{ id:"PRD-1023", name:"Urban BMX Rider", category:"BMX", price:680, stock:22, status:"In Stock", image:null },
-{ id:"PRD-1024", name:"Electric Volt E-Bike", category:"Electric", price:2100, stock:6, status:"Low Stock", image:null },
-{ id:"PRD-1025", name:"Mountain Trail X9", category:"Mountain", price:1500, stock:0, status:"Out of Stock", image:null }
+{ id:"PRD-1021", name:"Mountain Pro X1", category:"Mountain", customerPrice:1200, wholesalerPrice:950, stock:45, status:"In Stock", image:null },
+{ id:"PRD-1023", name:"Urban BMX Rider", category:"BMX", customerPrice:680, wholesalerPrice:520, stock:22, status:"In Stock", image:null },
+{ id:"PRD-1024", name:"Electric Volt E-Bike", category:"Electric", customerPrice:2100, wholesalerPrice:1750, stock:6, status:"Low Stock", image:null },
+{ id:"PRD-1025", name:"Mountain Trail X9", category:"Mountain", customerPrice:1500, wholesalerPrice:1200, stock:0, status:"Out of Stock", image:null }
 ]);
 
 const [form,setForm] = useState({
 name:"",
 category:"Mountain",
-price:"",
+customerPrice:"",
+wholesalerPrice:"",
 stock:"",
 image:null as any
 });
@@ -35,27 +40,29 @@ image:null as any
 
 function handleAdd(){
 
-if(!form.name || !form.price || !form.stock){
+if(!form.name || !form.customerPrice || !form.stock){
 alert("Please fill all fields");
 return;
 }
 
-const price = Number(form.price) || 0;
+const customerPrice = Number(form.customerPrice) || 0;
+const wholesalerPrice = Number(form.wholesalerPrice) || 0;
 const stock = Number(form.stock) || 0;
 
 const newProduct={
 id:`PRD-${Math.floor(Math.random()*9999)}`,
 name:form.name,
 category:form.category,
-price:price,
-stock:stock,
+customerPrice,
+wholesalerPrice,
+stock,
 image:preview,
 status:stock > 10 ? "In Stock" : stock > 0 ? "Low Stock" : "Out of Stock"
 };
 
 setProducts([...products,newProduct]);
 
-setForm({ name:"", category:"Mountain", price:"", stock:"", image:null });
+setForm({ name:"", category:"Mountain", customerPrice:"", wholesalerPrice:"", stock:"", image:null });
 
 setPreview(null);
 setShowModal(false);
@@ -111,17 +118,19 @@ const cols = row.split(",");
 
 const name = cols[0]?.trim();
 const category = cols[1]?.trim() || "Mountain";
-const price = safeNumber(cols[2]);
-const stock = safeNumber(cols[3]);
+const customerPrice = safeNumber(cols[2]);
+const wholesalerPrice = safeNumber(cols[3]);
+const stock = safeNumber(cols[4]);
 
 if(!name) return;
 
 imported.push({
 id:`PRD-${Math.floor(Math.random()*10000)}`,
-name:name,
-category:category,
-price:price,
-stock:stock,
+name,
+category,
+customerPrice,
+wholesalerPrice,
+stock,
 status:stock > 10 ? "In Stock" : stock > 0 ? "Low Stock" : "Out of Stock",
 image:null
 });
@@ -138,10 +147,10 @@ reader.readAsText(file);
 
 function exportCSV(){
 
-const header = "name,category,price,stock\n";
+const header = "name,category,customerPrice(INR),wholesalerPrice(INR),stock\n";
 
 const rows = products.map(p =>
-`${p.name},${p.category},${p.price},${p.stock}`
+`${p.name},${p.category},${p.customerPrice},${p.wholesalerPrice},${p.stock}`
 ).join("\n");
 
 const blob = new Blob([header + rows]);
@@ -170,7 +179,7 @@ filtered = filtered.filter(p=>p.category===filter);
 }
 
 if(sort==="Price"){
-filtered = [...filtered].sort((a,b)=>a.price-b.price);
+filtered = [...filtered].sort((a,b)=>a.customerPrice-b.customerPrice);
 }
 
 if(sort==="Stock"){
@@ -214,6 +223,21 @@ className="bg-yellow-400 hover:bg-yellow-500 text-black px-5 py-2 rounded-lg fon
 </button>
 
 </div>
+
+</div>
+
+<div className="flex gap-4">
+
+<select
+value={priceType}
+onChange={(e)=>setPriceType(e.target.value)}
+className="border border-black px-3 py-2 rounded"
+>
+
+<option>Customer</option>
+<option>Wholesaler</option>
+
+</select>
 
 </div>
 
@@ -261,9 +285,6 @@ className="border border-black bg-white px-4 py-2 rounded-lg w-72"
 
 <img
 src={product.image || categoryImages[product.category]}
-onError={(e:any)=>{
-e.currentTarget.src="https://cdn-icons-png.flaticon.com/512/2972/2972185.png"
-}}
 className="w-14 h-14 object-cover rounded-lg border"
 />
 
@@ -286,56 +307,21 @@ className="w-14 h-14 object-cover rounded-lg border"
 <td>{product.category}</td>
 
 <td className="font-medium">
-${product.price}
+₹{priceType==="Customer" ? product.customerPrice : product.wholesalerPrice}
 </td>
+
+<td>{product.stock}</td>
+
+<td>{product.status}</td>
 
 <td>
-
-<div className="w-32 bg-blue-100 rounded-full h-2 mb-1">
-
-<div
-className="bg-blue-600 h-2 rounded-full"
-style={{
-width:`${Math.min(product.stock * 2,100)}%`
-}}
-></div>
-
-</div>
-
-{product.stock}
-
-</td>
-
-<td>
-
-<span className={`px-3 py-1 rounded-full text-xs font-medium
-${product.status==="In Stock" && "bg-green-200 text-green-900"}
-${product.status==="Low Stock" && "bg-yellow-200 text-yellow-900"}
-${product.status==="Out of Stock" && "bg-red-200 text-red-900"}
-`}>
-
-{product.status}
-
-</span>
-
-</td>
-
-<td className="p-4">
-
-<div className="flex gap-3">
-
-<button className="text-blue-700 text-sm hover:underline">
-Edit
-</button>
 
 <button
 onClick={()=>setDeleteProduct(product)}
-className="text-red-600 text-sm hover:underline"
+className="text-red-600 text-sm"
 >
 Delete
 </button>
-
-</div>
 
 </td>
 
@@ -352,8 +338,7 @@ Delete
 </div>
 
 </main>
-
-{/* ADD PRODUCT MODAL HERE */}
+{/* ADD PRODUCT MODAL */}
 
 {showModal && (
 
@@ -361,7 +346,11 @@ Delete
 
 <div className="bg-white w-[420px] rounded-xl p-6 space-y-4 shadow-xl">
 
-<h3 className="text-lg font-semibold">Add Product</h3>
+<h3 className="text-lg font-semibold">
+Add Product
+</h3>
+
+{/* PRODUCT NAME */}
 
 <input
 placeholder="Product Name"
@@ -370,23 +359,41 @@ onChange={(e)=>setForm({...form,name:e.target.value})}
 className="w-full border p-2 rounded"
 />
 
+{/* CATEGORY */}
+
 <select
 value={form.category}
 onChange={(e)=>setForm({...form,category:e.target.value})}
 className="w-full border p-2 rounded"
 >
+
 {categories.map(c=>(
 <option key={c}>{c}</option>
 ))}
+
 </select>
+
+{/* CUSTOMER PRICE */}
 
 <input
 type="number"
-placeholder="Price"
-value={form.price}
-onChange={(e)=>setForm({...form,price:e.target.value})}
+placeholder="Customer Price"
+value={form.customerPrice}
+onChange={(e)=>setForm({...form,customerPrice:e.target.value})}
 className="w-full border p-2 rounded"
 />
+
+{/* WHOLESALER PRICE */}
+
+<input
+type="number"
+placeholder="Wholesaler Price"
+value={form.wholesalerPrice}
+onChange={(e)=>setForm({...form,wholesalerPrice:e.target.value})}
+className="w-full border p-2 rounded"
+/>
+
+{/* STOCK */}
 
 <input
 type="number"
@@ -396,6 +403,8 @@ onChange={(e)=>setForm({...form,stock:e.target.value})}
 className="w-full border p-2 rounded"
 />
 
+{/* IMAGE UPLOAD */}
+
 <div
 onDrop={handleDrop}
 onDragOver={(e)=>e.preventDefault()}
@@ -403,14 +412,27 @@ className="border-2 border-dashed p-6 text-center rounded cursor-pointer"
 >
 
 {preview ? (
-<img src={preview} className="h-24 mx-auto"/>
+
+<img
+src={preview}
+className="h-24 mx-auto"
+/>
+
 ) : (
-<p>Drag & Drop Image</p>
+
+<p>Drag & Drop Product Image</p>
+
 )}
 
-<input type="file" onChange={handleImage} className="mt-2"/>
+<input
+type="file"
+onChange={handleImage}
+className="mt-2"
+/>
 
 </div>
+
+{/* BUTTONS */}
 
 <div className="flex justify-end gap-3">
 
@@ -435,8 +457,6 @@ Add Product
 </div>
 
 )}
-
-
 </div>
 
 )
@@ -456,8 +476,6 @@ return(
 <p className="text-2xl font-semibold mt-1">
 {value}
 </p>
-
-
 
 </div>
 

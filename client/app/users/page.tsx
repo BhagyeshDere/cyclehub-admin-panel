@@ -105,56 +105,6 @@ filteredOrders=[...filteredOrders].sort((a,b)=>a.status.localeCompare(b.status))
 
 const totalRevenue = orders.reduce((acc,o)=>acc+o.amount,0);
 
-/* CUSTOMER ANALYTICS */
-
-const customersDay = 12;
-const customersMonth = 320;
-const customersYear = 4200;
-
-/* WHOLESALER ANALYTICS */
-
-const wholesalersDay = 2;
-const wholesalersMonth = 35;
-const wholesalersYear = 400;
-
-/* CHART DATA */
-
-const customerGrowth=[
-{name:"Jan",customers:200},
-{name:"Feb",customers:400},
-{name:"Mar",customers:650},
-{name:"Apr",customers:900},
-{name:"May",customers:1200},
-{name:"Jun",customers:1500}
-];
-
-const wholesalerGrowth=[
-{name:"Jan",wholesalers:20},
-{name:"Feb",wholesalers:35},
-{name:"Mar",wholesalers:50},
-{name:"Apr",wholesalers:70},
-{name:"May",wholesalers:95},
-{name:"Jun",wholesalers:120}
-];
-
-const revenueForecast=[
-{name:"Jul",revenue:38000},
-{name:"Aug",revenue:42000},
-{name:"Sep",revenue:46000},
-{name:"Oct",revenue:51000},
-{name:"Nov",revenue:58000}
-];
-
-const heatmapData=[
-{name:"Mon",orders:10},
-{name:"Tue",orders:25},
-{name:"Wed",orders:18},
-{name:"Thu",orders:30},
-{name:"Fri",orders:22},
-{name:"Sat",orders:40},
-{name:"Sun",orders:35}
-];
-
 /* REAL TIME NOTIFICATIONS */
 
 useEffect(()=>{
@@ -241,7 +191,7 @@ onChange={(e)=>setSearch(e.target.value)}
 />
 
 <select
-className="border border-black px-3 py-2 rounded"
+className="border border-black px-3 py-2 rounded text-black"
 onChange={(e)=>setSort(e.target.value)}
 >
 
@@ -252,7 +202,7 @@ onChange={(e)=>setSort(e.target.value)}
 </select>
 
 <select
-className="border border-black px-3 py-2 rounded"
+className="border border-black px-3 py-2 rounded text-black"
 onChange={(e)=>setOrderType(e.target.value)}
 >
 
@@ -370,6 +320,41 @@ View
 </div>
 
 </main>
+
+
+{/* ORDER DETAILS DRAWER */}
+
+{selectedOrder && (
+
+<div className="fixed inset-0 bg-black/40 flex justify-end">
+
+<div className="bg-white w-96 h-full p-6 space-y-6">
+
+<h3 className="text-xl font-bold text-black">
+Order Details
+</h3>
+
+<p className="text-black"><b>Customer:</b> {selectedOrder.customer}</p>
+<p className="text-black"><b>Email:</b> {selectedOrder.email}</p>
+<p className="text-black"><b>Type:</b> {selectedOrder.type}</p>
+<p className="text-black"><b>Cycle:</b> {selectedOrder.cycle}</p>
+<p className="text-black"><b>Amount:</b> ₹{selectedOrder.amount}</p>
+<p className="text-black"><b>Status:</b> {selectedOrder.status}</p>
+<p className="text-black"><b>Payment:</b> {selectedOrder.payment}</p>
+<p className="text-black"><b>Date:</b> {selectedOrder.date}</p>
+
+<button
+onClick={()=>setSelectedOrder(null)}
+className="bg-black text-white px-4 py-2 rounded"
+>
+Close
+</button>
+
+</div>
+
+</div>
+
+)}
 
 </div>
 

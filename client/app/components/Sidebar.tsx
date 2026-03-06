@@ -1,11 +1,29 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 export default function Sidebar() {
 
 const pathname = usePathname();
+const router = useRouter();
+
+/* LOGOUT FUNCTION */
+
+function handleLogout(){
+
+/* clear authentication data */
+
+localStorage.removeItem("token");
+localStorage.removeItem("user");
+
+sessionStorage.clear();
+
+/* redirect to login page */
+
+router.push("/login");
+
+}
 
 const Item = ({href,label,icon}:any) => (
 
@@ -62,7 +80,10 @@ CycleHub
 
 <div className="p-4 border-t border-yellow-200">
 
-<button className="flex items-center gap-3 text-red-600 hover:bg-red-100 w-full px-3 py-2 rounded-lg transition font-medium">
+<button
+onClick={handleLogout}
+className="flex items-center gap-3 text-red-600 hover:bg-red-100 w-full px-3 py-2 rounded-lg transition font-medium"
+>
 
 <span className="material-symbols-outlined">
 logout
