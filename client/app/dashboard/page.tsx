@@ -36,7 +36,7 @@ return()=>clearInterval(interval)
 
 
   return (
-    <div className="flex h-screen bg-[#f6f8fb] text-slate-800">
+    <div className="flex h-screen bg-gray-100 text-gray-800">
 
       {/* SIDEBAR */}
       <Sidebar />
@@ -48,7 +48,7 @@ return()=>clearInterval(interval)
 
         {/* HEADER */}
 
-        <header className="h-16 bg-white border-b flex items-center justify-between px-8">
+        <header className="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8">
 
           <div className="relative w-96">
 
@@ -57,8 +57,8 @@ return()=>clearInterval(interval)
             </span>
 
             <input
-              placeholder="Search products, orders, users..."
-              className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-yellow-400 outline-none"
+              placeholder="Search orders, products, wholesalers..."
+              className="w-full bg-gray-100 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm focus:ring-2 focus:ring-gray-300 outline-none"
             />
 
           </div>
@@ -84,7 +84,7 @@ return()=>clearInterval(interval)
 
               </div>
 
-              <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+              <div className="w-10 h-10 bg-gray-300 rounded-full"></div>
 
             </div>
 
@@ -150,12 +150,6 @@ return()=>clearInterval(interval)
 
                 </div>
 
-                <div className="flex gap-2">
-
-                  
-
-                </div>
-
               </div>
 
               <div className="h-64">
@@ -199,7 +193,7 @@ Live Revenue Chart
 <div className="flex items-end gap-3 h-40">
 
 {[40,60,80,30,70,50].map((v,i)=>(
-<div key={i} className="w-8 bg-green-500 rounded" style={{height:v+"%"}}></div>
+<div key={i} className="w-8 bg-gray-700 rounded" style={{height:v+"%"}}></div>
 ))}
 
 </div>
@@ -218,7 +212,7 @@ Orders Growth
 <div className="flex items-end gap-3 h-40">
 
 {[20,30,50,80,60,90].map((v,i)=>(
-<div key={i} className="w-8 bg-blue-500 rounded" style={{height:v+"%"}}></div>
+<div key={i} className="w-8 bg-gray-600 rounded" style={{height:v+"%"}}></div>
 ))}
 
 </div>
@@ -237,7 +231,7 @@ Customer Activity
 <div className="flex items-end gap-3 h-40">
 
 {[30,45,70,60,80,50].map((v,i)=>(
-<div key={i} className="w-8 bg-purple-500 rounded" style={{height:v+"%"}}></div>
+<div key={i} className="w-8 bg-gray-500 rounded" style={{height:v+"%"}}></div>
 ))}
 
 </div>
@@ -379,7 +373,7 @@ function StatCard({title,value,icon,growth}:any){
 
         </div>
 
-        <div className="p-2 bg-yellow-100 text-yellow-600 rounded-lg">
+        <div className="p-2 bg-gray-100 text-gray-700 rounded-lg">
 
           <span className="material-symbols-outlined">
             {icon}
@@ -416,7 +410,7 @@ function TopItem({name,percent}:any){
       <div className="h-2 bg-gray-200 rounded-full">
 
         <div
-          className="h-2 bg-yellow-400 rounded-full"
+          className="h-2 bg-gray-800 rounded-full"
           style={{width:`${percent}%`}}
         />
 

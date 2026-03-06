@@ -53,8 +53,8 @@ export default function SalesChart() {
           onClick={()=>setMode("weekly")}
           className={`px-3 py-1 text-xs rounded ${
             mode==="weekly"
-            ? "bg-yellow-400 text-black font-medium"
-            : "bg-gray-100"
+            ? "bg-gray-800 text-white font-medium"
+            : "bg-gray-100 text-gray-700"
           }`}
         >
           Weekly
@@ -64,8 +64,8 @@ export default function SalesChart() {
           onClick={()=>setMode("monthly")}
           className={`px-3 py-1 text-xs rounded ${
             mode==="monthly"
-            ? "bg-yellow-400 text-black font-medium"
-            : "bg-gray-100"
+            ? "bg-gray-800 text-white font-medium"
+            : "bg-gray-100 text-gray-700"
           }`}
         >
           Monthly
@@ -82,20 +82,20 @@ export default function SalesChart() {
           <defs>
 
             <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#facc15" stopOpacity={0.6}/>
-              <stop offset="95%" stopColor="#facc15" stopOpacity={0}/>
+              <stop offset="5%" stopColor="#1f2937" stopOpacity={0.5}/>
+              <stop offset="95%" stopColor="#1f2937" stopOpacity={0}/>
             </linearGradient>
 
           </defs>
 
-          <XAxis dataKey="name" stroke="#94a3b8" />
+          <XAxis dataKey="name" stroke="#6b7280" />
 
           <Tooltip />
 
           <Area
             type="monotone"
             dataKey="revenue"
-            stroke="#eab308"
+            stroke="#111827"
             strokeWidth={4}
             fillOpacity={1}
             fill="url(#colorRevenue)"

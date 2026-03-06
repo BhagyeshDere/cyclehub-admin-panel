@@ -1,453 +1,404 @@
 "use client";
 
+import { useState } from "react";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/Header";
-import { useState } from "react";
+
+type Product = {
+id:number
+name:string
+image:string
+category:string
+brand:string
+color:string
+price:number
+wholesalePrice:number
+quantity:number
+stockStatus:string
+}
 
 export default function Products(){
 
-const [search,setSearch] = useState("");
-const [showModal,setShowModal] = useState(false);
-const [deleteProduct,setDeleteProduct] = useState<any>(null);
-const [preview,setPreview] = useState<any>(null);
-const [filter,setFilter] = useState("All");
-const [sort,setSort] = useState("None");
+const [mode,setMode] = useState("customer")
+const [search,setSearch] = useState("")
+const [showModal,setShowModal] = useState(false)
+const [editIndex,setEditIndex] = useState<number|null>(null)
 
-/* NEW FILTER FOR PRICE TYPE */
-
-const [priceType,setPriceType] = useState("Customer");
-
-const [categories,setCategories] = useState([
-"Mountain","Road","BMX","Electric"
-]);
-
-const [products,setProducts] = useState([
-{ id:"PRD-1021", name:"Mountain Pro X1", category:"Mountain", customerPrice:1200, wholesalerPrice:950, stock:45, status:"In Stock", image:null },
-{ id:"PRD-1023", name:"Urban BMX Rider", category:"BMX", customerPrice:680, wholesalerPrice:520, stock:22, status:"In Stock", image:null },
-{ id:"PRD-1024", name:"Electric Volt E-Bike", category:"Electric", customerPrice:2100, wholesalerPrice:1750, stock:6, status:"Low Stock", image:null },
-{ id:"PRD-1025", name:"Mountain Trail X9", category:"Mountain", customerPrice:1500, wholesalerPrice:1200, stock:0, status:"Out of Stock", image:null }
-]);
-
-const [form,setForm] = useState({
+const [product,setProduct] = useState<Product>({
+id:0,
 name:"",
+image:"",
+category:"",
+brand:"",
+color:"",
+price:0,
+wholesalePrice:0,
+quantity:0,
+stockStatus:"In Stock"
+})
+
+const [products,setProducts] = useState<Product[]>([
+{
+id:1,
+name:"Mountain Pro X1",
+image:"https://images.unsplash.com/photo-1518655048521-f130df041f66",
 category:"Mountain",
-customerPrice:"",
-wholesalerPrice:"",
-stock:"",
-image:null as any
-});
-
-
-function handleAdd(){
-
-if(!form.name || !form.customerPrice || !form.stock){
-alert("Please fill all fields");
-return;
+brand:"Trek",
+color:"Red",
+price:1200,
+wholesalePrice:950,
+quantity:42,
+stockStatus:"In Stock"
+},
+{
+id:2,
+name:"Street Racer Elite",
+image:"https://images.unsplash.com/photo-1485965120184-e220f721d03e",
+category:"Road",
+brand:"Giant",
+color:"Black",
+price:950,
+wholesalePrice:750,
+quantity:8,
+stockStatus:"Low Stock"
+},
+{
+id:3,
+name:"Electric City S2",
+image:"https://images.unsplash.com/photo-1571333250630-f0230c320b6d",
+category:"Electric",
+brand:"Hero",
+color:"Blue",
+price:1500,
+wholesalePrice:1200,
+quantity:0,
+stockStatus:"Out of Stock"
 }
+])
 
-const customerPrice = Number(form.customerPrice) || 0;
-const wholesalerPrice = Number(form.wholesalerPrice) || 0;
-const stock = Number(form.stock) || 0;
+/* SEARCH */
 
-const newProduct={
-id:`PRD-${Math.floor(Math.random()*9999)}`,
-name:form.name,
-category:form.category,
-customerPrice,
-wholesalerPrice,
-stock,
-image:preview,
-status:stock > 10 ? "In Stock" : stock > 0 ? "Low Stock" : "Out of Stock"
-};
-
-setProducts([...products,newProduct]);
-
-setForm({ name:"", category:"Mountain", customerPrice:"", wholesalerPrice:"", stock:"", image:null });
-
-setPreview(null);
-setShowModal(false);
-
-}
-
-function handleDelete(){
-setProducts(products.filter(p=>p.id!==deleteProduct.id));
-setDeleteProduct(null);
-}
-
-function handleDrop(e:any){
-e.preventDefault();
-const file=e.dataTransfer.files[0];
-if(file){
-setForm({...form,image:file});
-setPreview(URL.createObjectURL(file));
-}
-}
-
-function handleImage(e:any){
-const file=e.target.files[0];
-if(file){
-setForm({...form,image:file});
-setPreview(URL.createObjectURL(file));
-}
-}
-
-function safeNumber(value:any){
-const num = Number(value);
-return isNaN(num) ? 0 : num;
-}
-
-function handleCSV(e:any){
-
-const file=e.target.files[0];
-if(!file) return;
-
-const reader=new FileReader();
-
-reader.onload=(event:any)=>{
-
-const text = event.target.result;
-const rows = text.split("\n");
-
-const imported:any[] = [];
-
-rows.slice(1).forEach((row:any)=>{
-
-if(!row.trim()) return;
-
-const cols = row.split(",");
-
-const name = cols[0]?.trim();
-const category = cols[1]?.trim() || "Mountain";
-const customerPrice = safeNumber(cols[2]);
-const wholesalerPrice = safeNumber(cols[3]);
-const stock = safeNumber(cols[4]);
-
-if(!name) return;
-
-imported.push({
-id:`PRD-${Math.floor(Math.random()*10000)}`,
-name,
-category,
-customerPrice,
-wholesalerPrice,
-stock,
-status:stock > 10 ? "In Stock" : stock > 0 ? "Low Stock" : "Out of Stock",
-image:null
-});
-
-});
-
-setProducts(prev => [...prev,...imported]);
-
-};
-
-reader.readAsText(file);
-
-}
-
-function exportCSV(){
-
-const header = "name,category,customerPrice(INR),wholesalerPrice(INR),stock\n";
-
-const rows = products.map(p =>
-`${p.name},${p.category},${p.customerPrice},${p.wholesalerPrice},${p.stock}`
-).join("\n");
-
-const blob = new Blob([header + rows]);
-const url = URL.createObjectURL(blob);
-
-const a = document.createElement("a");
-a.href=url;
-a.download="products.csv";
-a.click();
-
-}
-
-const categoryImages:any = {
-Mountain:"https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?w=200",
-Road:"https://images.unsplash.com/photo-1518655048521-f130df041f66?w=200",
-BMX:"https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=200",
-Electric:"https://images.unsplash.com/photo-1595433562696-7c8c7b5e21a3?w=200"
-};
-
-let filtered = products.filter(p =>
+const filtered = products.filter(p =>
 p.name.toLowerCase().includes(search.toLowerCase())
-);
+)
 
-if(filter!=="All"){
-filtered = filtered.filter(p=>p.category===filter);
+/* DELETE */
+
+function deleteProduct(index:number){
+setProducts(products.filter((_,i)=>i!==index))
 }
 
-if(sort==="Price"){
-filtered = [...filtered].sort((a,b)=>a.customerPrice-b.customerPrice);
+/* EDIT */
+
+function editProduct(index:number){
+setProduct(products[index])
+setEditIndex(index)
+setShowModal(true)
 }
 
-if(sort==="Stock"){
-filtered = [...filtered].sort((a,b)=>a.stock-b.stock);
+/* ADD / UPDATE */
+
+function saveProduct(){
+
+if(editIndex !== null){
+
+const updated=[...products]
+updated[editIndex]=product
+setProducts(updated)
+setEditIndex(null)
+
+}else{
+
+setProducts([...products,{...product,id:Date.now()}])
+
+}
+
+setShowModal(false)
+
+setProduct({
+id:0,
+name:"",
+image:"",
+category:"",
+brand:"",
+color:"",
+price:0,
+wholesalePrice:0,
+quantity:0,
+stockStatus:"In Stock"
+})
+
 }
 
 return(
 
-<div className="flex min-h-screen bg-[#f6f8fb] text-black">
+<div className="flex bg-gray-50 min-h-screen">
 
 <Sidebar/>
 
-<main className="flex-1 flex flex-col overflow-y-auto">
+<div className="flex-1">
 
 <Header/>
 
-<div className="p-8 space-y-6">
+<div className="p-8 max-w-5xl">
 
-<div className="flex items-center justify-between">
+{/* TITLE */}
 
-<h2 className="text-2xl font-semibold">
+<div className="flex justify-between items-center mb-6">
+
+<h2 className="text-xl font-semibold text-gray-800">
 Products
 </h2>
 
-<div className="flex gap-3">
-
-<button onClick={exportCSV} className="bg-black text-white px-4 py-2 rounded">
-Export CSV
-</button>
-
-<label className="bg-black text-white px-4 py-2 rounded cursor-pointer text-sm">
-Import CSV
-<input type="file" hidden onChange={handleCSV}/>
-</label>
-
 <button
 onClick={()=>setShowModal(true)}
-className="bg-yellow-400 hover:bg-yellow-500 text-black px-5 py-2 rounded-lg font-medium shadow"
+className="bg-black hover:bg-gray-800 text-white w-10 h-10 rounded-lg flex items-center justify-center text-lg shadow"
 >
-+ Add Product
++
 </button>
 
 </div>
 
-</div>
 
-<div className="flex gap-4">
+{/* SEARCH */}
 
-<select
-value={priceType}
-onChange={(e)=>setPriceType(e.target.value)}
-className="border border-black px-3 py-2 rounded"
->
-
-<option>Customer</option>
-<option>Wholesaler</option>
-
-</select>
-
-</div>
-
-<div className="grid grid-cols-3 gap-6">
-
-<Card title="Total Products" value={products.length}/>
-<Card title="Low Stock" value={products.filter(p=>p.stock<15).length}/>
-<Card title="Out of Stock" value={products.filter(p=>p.stock==0).length}/>
-
-</div>
+<div className="mb-6">
 
 <input
-placeholder="Search products..."
+placeholder="Search products, SKU..."
+className="w-full bg-white border border-gray-200 px-4 py-3 rounded-xl outline-none focus:ring-2 focus:ring-black text-gray-700"
 value={search}
 onChange={(e)=>setSearch(e.target.value)}
-className="border border-black bg-white px-4 py-2 rounded-lg w-72"
 />
-
-<div className="bg-white rounded-xl shadow overflow-x-auto">
-
-<table className="w-full min-w-[900px] border border-black rounded-xl">
-
-<thead className="border-b bg-black text-white text-sm">
-
-<tr>
-<th className="p-4 text-left">Product</th>
-<th className="p-4 text-left">Category</th>
-<th className="p-4 text-left">Price</th>
-<th className="p-4 text-left">Stock</th>
-<th className="p-4 text-left">Status</th>
-<th className="p-4 text-left">Actions</th>
-</tr>
-
-</thead>
-
-<tbody>
-
-{filtered.map((product)=>(
-
-<tr key={product.id} className="border-b hover:bg-blue-50 transition">
-
-<td className="p-4">
-
-<div className="flex items-center gap-4">
-
-<img
-src={product.image || categoryImages[product.category]}
-className="w-14 h-14 object-cover rounded-lg border"
-/>
-
-<div>
-
-<p className="font-medium">
-{product.name}
-</p>
-
-<p className="text-xs">
-{product.id}
-</p>
 
 </div>
 
-</div>
 
-</td>
+{/* PRICING TOGGLE */}
 
-<td>{product.category}</td>
-
-<td className="font-medium">
-₹{priceType==="Customer" ? product.customerPrice : product.wholesalerPrice}
-</td>
-
-<td>{product.stock}</td>
-
-<td>{product.status}</td>
-
-<td>
+<div className="flex bg-gray-200 rounded-xl p-1 mb-6">
 
 <button
-onClick={()=>setDeleteProduct(product)}
-className="text-red-600 text-sm"
+onClick={()=>setMode("customer")}
+className={`flex-1 py-2 text-sm font-medium rounded-lg transition ${
+mode==="customer"
+? "bg-white shadow text-black"
+: "text-gray-600"
+}`}
 >
-Delete
+Customer Pricing
 </button>
 
-</td>
+<button
+onClick={()=>setMode("wholesaler")}
+className={`flex-1 py-2 text-sm font-medium rounded-lg transition ${
+mode==="wholesaler"
+? "bg-white shadow text-black"
+: "text-gray-600"
+}`}
+>
+Wholesaler Pricing
+</button>
 
-</tr>
+</div>
+
+
+{/* FILTERS */}
+
+<div className="flex gap-3 mb-6 flex-wrap">
+
+<button className="bg-white border px-4 py-1.5 rounded-lg text-sm text-gray-700 hover:bg-gray-100">
+Category
+</button>
+
+<button className="bg-white border px-4 py-1.5 rounded-lg text-sm text-gray-700 hover:bg-gray-100">
+Brand
+</button>
+
+<button className="bg-white border px-4 py-1.5 rounded-lg text-sm text-gray-700 hover:bg-gray-100">
+Stock
+</button>
+
+<button className="bg-white border px-4 py-1.5 rounded-lg text-sm text-gray-700 hover:bg-gray-100">
+Color
+</button>
+
+</div>
+
+
+{/* PRODUCT LIST */}
+
+<div className="space-y-4">
+
+{filtered.map((p,index)=>(
+
+<div
+key={p.id}
+className="bg-white rounded-xl p-4 flex items-center gap-4 border border-gray-200 shadow-sm hover:shadow transition"
+>
+
+<img
+src={p.image}
+className="w-16 h-16 rounded-lg object-cover border"
+/>
+
+<div className="flex-1">
+
+<div className="flex justify-between items-start">
+
+<h3 className="font-semibold text-gray-800">
+{p.name}
+</h3>
+
+<div className="flex gap-3 text-lg">
+
+<button
+onClick={()=>editProduct(index)}
+className="text-gray-500 hover:text-black"
+>
+✏️
+</button>
+
+<button
+onClick={()=>deleteProduct(index)}
+className="text-red-500 hover:text-red-700"
+>
+🗑
+</button>
+
+</div>
+
+</div>
+
+<p className="text-sm text-gray-500 mt-1">
+{p.category} • {p.brand}
+</p>
+
+<div className="flex justify-between items-center mt-2">
+
+<span className="font-bold text-gray-900">
+
+₹ {mode==="customer"
+? p.price
+: p.wholesalePrice}
+
+</span>
+
+<span className={`text-xs px-3 py-1 rounded-full font-medium ${
+p.stockStatus==="In Stock"
+? "bg-green-100 text-green-700"
+: p.stockStatus==="Low Stock"
+? "bg-yellow-100 text-yellow-700"
+: "bg-red-100 text-red-600"
+}`}>
+{p.stockStatus} ({p.quantity})
+</span>
+
+</div>
+
+</div>
+
+</div>
 
 ))}
 
-</tbody>
-
-</table>
-
 </div>
 
 </div>
 
-</main>
+</div>
+
+
 {/* ADD PRODUCT MODAL */}
 
 {showModal && (
 
 <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
 
-<div className="bg-white w-[420px] rounded-xl p-6 space-y-4 shadow-xl">
+<div className="bg-white p-6 rounded-xl w-[420px] space-y-3 shadow-lg">
 
-<h3 className="text-lg font-semibold">
-Add Product
+<h3 className="font-semibold text-lg text-gray-800">
+{editIndex !== null ? "Update Product" : "Add Product"}
 </h3>
 
-{/* PRODUCT NAME */}
-
 <input
-placeholder="Product Name"
-value={form.name}
-onChange={(e)=>setForm({...form,name:e.target.value})}
-className="w-full border p-2 rounded"
+placeholder="Name"
+className="border border-gray-300 w-full p-2 rounded-lg focus:ring-2 focus:ring-black"
+value={product.name}
+onChange={(e)=>setProduct({...product,name:e.target.value})}
 />
 
-{/* CATEGORY */}
+<input
+placeholder="Category"
+className="border border-gray-300 w-full p-2 rounded-lg focus:ring-2 focus:ring-black"
+value={product.category}
+onChange={(e)=>setProduct({...product,category:e.target.value})}
+/>
 
-<select
-value={form.category}
-onChange={(e)=>setForm({...form,category:e.target.value})}
-className="w-full border p-2 rounded"
->
+<input
+placeholder="Brand"
+className="border border-gray-300 w-full p-2 rounded-lg focus:ring-2 focus:ring-black"
+value={product.brand}
+onChange={(e)=>setProduct({...product,brand:e.target.value})}
+/>
 
-{categories.map(c=>(
-<option key={c}>{c}</option>
-))}
+<input
+placeholder="Color"
+className="border border-gray-300 w-full p-2 rounded-lg focus:ring-2 focus:ring-black"
+value={product.color}
+onChange={(e)=>setProduct({...product,color:e.target.value})}
+/>
 
-</select>
-
-{/* CUSTOMER PRICE */}
+<input
+type="number"
+placeholder="Quantity"
+className="border border-gray-300 w-full p-2 rounded-lg focus:ring-2 focus:ring-black"
+value={product.quantity}
+onChange={(e)=>setProduct({...product,quantity:Number(e.target.value)})}
+/>
 
 <input
 type="number"
 placeholder="Customer Price"
-value={form.customerPrice}
-onChange={(e)=>setForm({...form,customerPrice:e.target.value})}
-className="w-full border p-2 rounded"
+className="border border-gray-300 w-full p-2 rounded-lg focus:ring-2 focus:ring-black"
+value={product.price}
+onChange={(e)=>setProduct({...product,price:Number(e.target.value)})}
 />
-
-{/* WHOLESALER PRICE */}
 
 <input
 type="number"
 placeholder="Wholesaler Price"
-value={form.wholesalerPrice}
-onChange={(e)=>setForm({...form,wholesalerPrice:e.target.value})}
-className="w-full border p-2 rounded"
+className="border border-gray-300 w-full p-2 rounded-lg focus:ring-2 focus:ring-black"
+value={product.wholesalePrice}
+onChange={(e)=>setProduct({...product,wholesalePrice:Number(e.target.value)})}
 />
 
-{/* STOCK */}
-
-<input
-type="number"
-placeholder="Stock"
-value={form.stock}
-onChange={(e)=>setForm({...form,stock:e.target.value})}
-className="w-full border p-2 rounded"
-/>
-
-{/* IMAGE UPLOAD */}
-
-<div
-onDrop={handleDrop}
-onDragOver={(e)=>e.preventDefault()}
-className="border-2 border-dashed p-6 text-center rounded cursor-pointer"
+<select
+className="border border-gray-300 w-full p-2 rounded-lg focus:ring-2 focus:ring-black"
+value={product.stockStatus}
+onChange={(e)=>setProduct({...product,stockStatus:e.target.value})}
 >
 
-{preview ? (
+<option>In Stock</option>
+<option>Low Stock</option>
+<option>Out of Stock</option>
 
-<img
-src={preview}
-className="h-24 mx-auto"
-/>
+</select>
 
-) : (
-
-<p>Drag & Drop Product Image</p>
-
-)}
-
-<input
-type="file"
-onChange={handleImage}
-className="mt-2"
-/>
-
-</div>
-
-{/* BUTTONS */}
-
-<div className="flex justify-end gap-3">
+<div className="flex justify-end gap-3 pt-2">
 
 <button
 onClick={()=>setShowModal(false)}
-className="px-4 py-2 border rounded"
+className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg"
 >
 Cancel
 </button>
 
 <button
-onClick={handleAdd}
-className="px-4 py-2 bg-yellow-400 rounded"
+onClick={saveProduct}
+className="px-4 py-2 bg-black text-white rounded-lg hover:bg-gray-800"
 >
-Add Product
+Save
 </button>
 
 </div>
@@ -457,25 +408,6 @@ Add Product
 </div>
 
 )}
-</div>
-
-)
-
-}
-
-function Card({title,value}:any){
-
-return(
-
-<div className="bg-white border rounded-xl p-5 shadow">
-
-<p className="text-sm">
-{title}
-</p>
-
-<p className="text-2xl font-semibold mt-1">
-{value}
-</p>
 
 </div>
 

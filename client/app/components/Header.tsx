@@ -2,25 +2,22 @@ export default function Header(){
 
 return(
 
-<header className="h-16 bg-gradient-to-r from-white via-yellow-50 to-white border-b border-yellow-200 flex items-center justify-between px-8 shadow-sm">
+<header className="h-16 bg-[#F8F9FB] border-b border-gray-200 flex items-center justify-between px-8">
 
 {/* LEFT SIDE : LOGO */}
 
 <div className="flex items-center gap-6">
 
-<h1 className="text-xl font-bold text-black tracking-wide">
-CycleHub
-</h1>
 
 <div className="relative w-96">
 
-<span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-black">
+<span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
 search
 </span>
 
 <input
-placeholder="Search products, orders, users..."
-className="w-full bg-white border border-yellow-300 rounded-xl pl-10 pr-4 py-2 text-sm text-black placeholder-black focus:ring-2 focus:ring-yellow-400 outline-none shadow-sm"
+placeholder="Search orders, products, wholesalers..."
+className="w-full bg-gray-100 border border-gray-200 rounded-xl pl-10 pr-4 py-2 text-sm text-gray-700 placeholder-gray-400 focus:ring-2 focus:ring-gray-300 outline-none"
 />
 
 </div>
@@ -35,7 +32,7 @@ className="w-full bg-white border border-yellow-300 rounded-xl pl-10 pr-4 py-2 t
 
 <div className="relative cursor-pointer">
 
-<span className="material-symbols-outlined text-black">
+<span className="material-symbols-outlined text-gray-600">
 notifications
 </span>
 
@@ -51,11 +48,11 @@ notifications
 
 <div className="text-right">
 
-<p className="text-sm font-medium text-black">
+<p className="text-sm font-medium text-gray-800">
 Admin
 </p>
 
-<p className="text-xs text-black">
+<p className="text-xs text-gray-500">
 Super Admin
 </p>
 
@@ -63,7 +60,7 @@ Super Admin
 
 <img
 src="https://i.pravatar.cc/40?img=12"
-className="w-10 h-10 rounded-full border border-yellow-400 shadow"
+className="w-10 h-10 rounded-full border border-gray-300"
 />
 
 </div>

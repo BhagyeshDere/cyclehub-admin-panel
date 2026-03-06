@@ -49,22 +49,22 @@ export default function Login() {
 
   return (
 
-<div className="flex h-screen w-full bg-gradient-to-br from-[#f5f7fb] via-[#f9fafc] to-[#eef2f7] items-center justify-center overflow-hidden relative">
+<div className="flex h-screen w-full bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 items-center justify-center overflow-hidden relative">
 
 {/* BACKGROUND GLOW */}
 
-<div className="absolute w-[700px] h-[700px] bg-yellow-200 opacity-30 blur-[160px] rounded-full -top-40 -left-40"></div>
-<div className="absolute w-[600px] h-[600px] bg-orange-200 opacity-30 blur-[160px] rounded-full bottom-0 right-0"></div>
+<div className="absolute w-[700px] h-[700px] bg-gray-300 opacity-20 blur-[160px] rounded-full -top-40 -left-40"></div>
+<div className="absolute w-[600px] h-[600px] bg-gray-400 opacity-20 blur-[160px] rounded-full bottom-0 right-0"></div>
 
 {/* LOGIN CARD */}
 
-<div className="relative w-[1000px] h-[600px] bg-white/95 backdrop-blur-xl rounded-3xl shadow-[0_70px_160px_rgba(0,0,0,0.15)] flex overflow-visible border border-slate-200">
+<div className="relative w-[1000px] h-[600px] bg-white/95 backdrop-blur-xl rounded-3xl shadow-[0_70px_160px_rgba(0,0,0,0.15)] flex overflow-visible border border-gray-200">
 
 {/* LEFT SIDE */}
 
-<div className="flex-1 relative bg-gradient-to-br from-yellow-100 via-yellow-50 to-orange-100 rounded-l-3xl flex items-center justify-center">
+<div className="flex-1 relative bg-gradient-to-br from-gray-100 via-gray-50 to-gray-200 rounded-l-3xl flex items-center justify-center">
 
-<div className="absolute w-[360px] h-[360px] bg-yellow-300 opacity-20 blur-3xl rounded-full"></div>
+<div className="absolute w-[360px] h-[360px] bg-gray-400 opacity-20 blur-3xl rounded-full"></div>
 
 <div className="absolute -left-24 bottom-[-110px]">
 
@@ -89,15 +89,15 @@ className="object-contain drop-shadow-[0_40px_70px_rgba(0,0,0,0.25)]"
 
 <div className="mb-10">
 
-<h2 className="text-3xl font-semibold text-slate-700">
+<h2 className="text-3xl font-semibold text-gray-600">
 Welcome to
 </h2>
 
 <h1 className="text-4xl font-bold text-black tracking-tight">
-Cycle<span className="text-yellow-500">Hub</span>
+Cycle<span className="text-gray-700">Bazaar</span>
 </h1>
 
-<p className="text-sm text-slate-500 mt-1">
+<p className="text-sm text-gray-500 mt-1">
 Admin Control Panel
 </p>
 
@@ -107,14 +107,14 @@ Admin Control Panel
 
 <div className="relative mb-5">
 
-<span className="absolute left-3 top-3 text-slate-400">
+<span className="absolute left-3 top-3 text-gray-400">
 📧
 </span>
 
 <input
 type="email"
 placeholder="Enter Email Address"
-className="w-full border border-slate-300 rounded-xl pl-10 pr-4 py-3 bg-white focus:ring-2 focus:ring-yellow-400 outline-none transition shadow-sm text-black placeholder:text-slate-400"
+className="w-full border border-gray-300 rounded-xl pl-10 pr-4 py-3 bg-white focus:ring-2 focus:ring-black outline-none transition shadow-sm text-black placeholder:text-gray-400"
 value={email}
 onChange={(e)=>setEmail(e.target.value)}
 />
@@ -125,21 +125,21 @@ onChange={(e)=>setEmail(e.target.value)}
 
 <div className="relative mb-4">
 
-<span className="absolute left-3 top-3 text-slate-400">
+<span className="absolute left-3 top-3 text-gray-400">
 🔒
 </span>
 
 <input
 type={showPassword ? "text":"password"}
 placeholder="Enter Password"
-className="w-full border border-slate-300 rounded-xl pl-10 pr-10 py-3 bg-white focus:ring-2 focus:ring-yellow-400 outline-none transition shadow-sm text-black placeholder:text-slate-400"
+className="w-full border border-gray-300 rounded-xl pl-10 pr-10 py-3 bg-white focus:ring-2 focus:ring-black outline-none transition shadow-sm text-black placeholder:text-gray-400"
 value={password}
 onChange={(e)=>setPassword(e.target.value)}
 />
 
 <span
 onClick={()=>setShowPassword(!showPassword)}
-className="absolute right-4 top-3.5 cursor-pointer text-slate-500 hover:text-black transition"
+className="absolute right-4 top-3.5 cursor-pointer text-gray-500 hover:text-black transition"
 >
 {showPassword ? "🙈":"👁️"}
 </span>
@@ -150,20 +150,20 @@ className="absolute right-4 top-3.5 cursor-pointer text-slate-500 hover:text-bla
 
 <div className="flex items-center justify-between mb-8 text-sm">
 
-<label className="flex items-center gap-2 text-slate-600">
+<label className="flex items-center gap-2 text-gray-600">
 
 <input
 type="checkbox"
 checked={remember}
 onChange={()=>setRemember(!remember)}
-className="accent-yellow-500"
+className="accent-black"
 />
 
 Remember me
 
 </label>
 
-<span className="text-yellow-600 cursor-pointer hover:underline">
+<span className="text-black cursor-pointer hover:underline">
 Forgot password?
 </span>
 
@@ -174,12 +174,12 @@ Forgot password?
 <button
 onClick={handleLogin}
 disabled={loading}
-className="w-full bg-yellow-400 hover:bg-yellow-500 active:scale-[0.97] text-black py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl"
+className="w-full bg-black hover:bg-gray-900 active:scale-[0.97] text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl"
 >
 
 {loading ? (
 <>
-<div className="w-5 h-5 border-2 border-black border-t-transparent rounded-full animate-spin"></div>
+<div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
 Signing In...
 </>
 ) : (
@@ -192,16 +192,16 @@ Signing In...
 
 <div className="flex items-center gap-3 my-8">
 
-<div className="flex-1 h-px bg-slate-200"></div>
-<span className="text-xs text-slate-400">Secure Admin Portal</span>
-<div className="flex-1 h-px bg-slate-200"></div>
+<div className="flex-1 h-px bg-gray-200"></div>
+<span className="text-xs text-gray-400">Secure Admin Portal</span>
+<div className="flex-1 h-px bg-gray-200"></div>
 
 </div>
 
 {/* FOOTER */}
 
-<p className="text-xs text-slate-500 text-center">
-© 2026 CycleHub Admin
+<p className="text-xs text-gray-500 text-center">
+© 2026 Cycle_Bazaar Admin
 </p>
 
 </div>
